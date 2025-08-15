@@ -1,0 +1,375 @@
+.savings-display {
+  margin-top: 16px;
+}
+
+.savings-display-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.savings-header {
+  margin-bottom: 16px;
+}
+
+.savings-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.savings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.savings-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.savings-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.savings-card h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #f8f9fa;
+  padding-bottom: 8px;
+}
+
+/* Card Type Specific Styling */
+.savings-card.hourly {
+  border-left: 4px solid #ffc107;
+}
+
+.savings-card.monthly {
+  border-left: 4px solid #007bff;
+}
+
+.savings-card.yearly {
+  border-left: 4px solid #28a745;
+}
+
+.savings-card.project-summary.positive {
+  border-left: 4px solid #28a745;
+  background: linear-gradient(135deg, #f8fff9 0%, #f0f9f0 100%);
+}
+
+.savings-card.project-summary.negative {
+  border-left: 4px solid #dc3545;
+  background: linear-gradient(135deg, #fff8f8 0%, #fdf2f2 100%);
+}
+
+.savings-card.benefits {
+  border-left: 4px solid #17a2b8;
+}
+
+.savings-card.resource-comparison {
+  border-left: 4px solid #6f42c1;
+  grid-column: 1 / -1; /* Span full width */
+}
+
+/* Cost Comparison */
+.cost-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.cost-item.current {
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+}
+
+.cost-item.target {
+  background-color: #d1ecf1;
+  border-left: 3px solid #17a2b8;
+}
+
+.cost-item.savings.positive {
+  background-color: #d4edda;
+  border-left: 3px solid #28a745;
+}
+
+.cost-item.savings.negative {
+  background-color: #f8d7da;
+  border-left: 3px solid #dc3545;
+}
+
+.cost-item .label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.cost-item .amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cost-item .amount.positive {
+  color: #28a745;
+}
+
+.cost-item .amount.negative {
+  color: #dc3545;
+}
+
+/* Project Summary Metrics */
+.summary-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.metric-row:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.metric-value.large {
+  font-size: 20px;
+}
+
+.metric-value.positive {
+  color: #28a745;
+}
+
+.metric-value.negative {
+  color: #dc3545;
+}
+
+/* Benefits Grid */
+.benefits-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.benefit-item.productivity {
+  border-left: 3px solid #ffc107;
+}
+
+.benefit-item.quality {
+  border-left: 3px solid #007bff;
+}
+
+.benefit-item.risk {
+  border-left: 3px solid #28a745;
+}
+
+.benefit-icon {
+  font-size: 20px;
+  min-width: 24px;
+}
+
+.benefit-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.benefit-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.benefit-value {
+  font-weight: 700;
+  color: #17a2b8;
+  font-size: 16px;
+}
+
+/* Resource Comparison */
+.resource-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.resource-column {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.resource-column h5 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.resource-details p {
+  margin: 8px 0;
+  font-size: 13px;
+  color: #495057;
+}
+
+.resource-details strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ROI Summary */
+.roi-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #dee2e6;
+}
+
+.roi-summary h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.roi-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.roi-text.positive {
+  color: #155724;
+}
+
+.roi-text.negative {
+  color: #721c24;
+}
+
+.roi-text strong {
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .savings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .savings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cost-item,
+  .metric-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .cost-item .amount,
+  .metric-value {
+    align-self: flex-end;
+  }
+  
+  .benefit-item {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: center;
+  }
+  
+  .benefit-content {
+    align-items: center;
+    width: 100%;
+  }
+  
+  .resource-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .benefits-grid {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .savings-card {
+    padding: 16px;
+  }
+  
+  .roi-summary {
+    padding: 16px;
+  }
+  
+  .savings-header h3 {
+    font-size: 20px;
+  }
+  
+  .cost-item .amount {
+    font-size: 16px;
+  }
+  
+  .metric-value.large {
+    font-size: 18px;
+  }
+} 

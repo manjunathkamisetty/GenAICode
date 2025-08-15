@@ -1,0 +1,25 @@
+{
+  "name": "cp-simulator-nodejs-app",
+  "version": "1.0.0",
+  "description": "Node.js Express Server Application for Azure App Service",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": "18.17.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js",
+    "build": "node deploy-final.js",
+    "postinstall": "node deploy-final.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {},
+  "keywords": ["nodejs", "express", "azure-app-service", "iisnode"],
+  "author": "Cognizant - Vibecode Team",
+  "license": "UNLICENSED"
+} 

@@ -1,0 +1,575 @@
+.multi-role-savings-display {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  margin-top: 16px;
+}
+
+.multi-role-savings-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.placeholder-content {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.placeholder-content h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.placeholder-content p {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+/* Header */
+.savings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f8f9fa;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.savings-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+}
+
+.tab-button:hover {
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-button.active {
+  background-color: white;
+  color: #007bff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tab Content */
+.tab-content {
+  margin-top: 24px;
+}
+
+/* Summary Tab */
+.summary-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.total-savings-card {
+  background: linear-gradient(135deg, #f8fff9 0%, #f0f9f0 100%);
+  border: 1px solid #28a745;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.total-savings-card h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.total-savings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.savings-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-weight: 700;
+  color: #333;
+}
+
+.metric-value.large {
+  font-size: 1.5rem;
+}
+
+.metric-value.extra-large {
+  font-size: 2rem;
+}
+
+.metric-value.positive {
+  color: #28a745;
+}
+
+.metric-value.negative {
+  color: #dc3545;
+}
+
+/* Summary Stats Grid */
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.stats-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.stats-card h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #333;
+  background-color: #e7f3ff;
+  color: #0066cc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Benefits List */
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: white;
+  border-radius: 8px;
+  gap: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.benefit-icon {
+  font-size: 20px;
+  min-width: 24px;
+}
+
+.benefit-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.benefit-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.benefit-value {
+  font-weight: 700;
+  color: #17a2b8;
+  font-size: 16px;
+}
+
+/* Individual Tab */
+.individual-tab {
+  display: flex;
+  flex-direction: column;
+}
+
+.individual-roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.individual-role-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.individual-role-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.role-header {
+  padding: 16px 20px;
+  cursor: pointer;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.role-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.expand-toggle {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expand-toggle:hover {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.role-title h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.savings-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.savings-badge.positive {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.savings-badge.negative {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.role-summary {
+  padding: 12px 20px;
+  background: white;
+}
+
+.summary-item {
+  padding: 4px 0;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.role-details {
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #e9ecef;
+}
+
+.role-savings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.savings-section,
+.config-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.role-savings-grid h5 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.savings-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.metric-row span:first-child {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.metric-row span:last-child {
+  font-weight: 600;
+}
+
+.metric-row .positive {
+  color: #28a745;
+}
+
+.metric-row .negative {
+  color: #dc3545;
+}
+
+.config-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.config-item strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.config-item span {
+  color: #6c757d;
+}
+
+/* Comparison Tab */
+.comparison-tab {
+  overflow-x: auto;
+}
+
+.role-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.role-comparison-table th {
+  background-color: #f8f9fa;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 14px;
+}
+
+.role-comparison-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 14px;
+}
+
+.role-comparison-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.role-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.role-comparison-table .positive {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.role-comparison-table .negative {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.total-row {
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+}
+
+.total-row td {
+  font-weight: 600;
+  border-bottom: none;
+}
+
+.total-row .strong {
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .total-savings-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .summary-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .role-savings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .multi-role-savings-display {
+    padding: 16px;
+  }
+  
+  .savings-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .tab-navigation {
+    justify-content: center;
+  }
+  
+  .total-savings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .role-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .comparison-tab {
+    font-size: 12px;
+  }
+  
+  .role-comparison-table th,
+  .role-comparison-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-navigation {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    text-align: center;
+    padding: 12px;
+  }
+  
+  .role-comparison-table {
+    font-size: 11px;
+  }
+  
+  .role-comparison-table th,
+  .role-comparison-table td {
+    padding: 6px;
+  }
+} 

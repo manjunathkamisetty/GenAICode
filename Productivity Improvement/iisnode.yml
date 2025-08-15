@@ -1,0 +1,28 @@
+# FORCE NODE.JS EXECUTION IN AZURE
+nodeProcessCommandLine: node
+node_env: production
+
+# Logging for debugging
+loggingEnabled: true
+logDirectoryNameSuffix: nodejs
+debuggingEnabled: false
+devErrorsEnabled: true
+
+# Performance
+nodeProcessCountPerApplication: 1
+maxConcurrentRequestsPerProcess: 1024
+maxNamedPipeConnectionRetry: 3
+namedPipeConnectionRetryDelay: 2000
+
+# Enable detailed error information
+enableXFF: true
+flushResponse: false
+
+# Files to watch for changes
+watchedFiles: "*.js;package.json;web.config"
+
+# Graceful shutdown
+gracefulShutdownTimeout: 60000
+
+# Force interceptor
+interceptor: "iisnode/interceptor.js" 

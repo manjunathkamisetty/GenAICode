@@ -1,0 +1,330 @@
+.enhanced-resource-config-selector {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px;
+}
+
+.config-header {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.config-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.config-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 14px;
+}
+
+.config-dropdown {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.config-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.config-dropdown:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.config-dropdown:disabled[value=""] {
+  color: #f59e0b;
+  font-style: italic;
+}
+
+/* Enhanced styling for separate role and level */
+.config-dropdown[value=""]:not(:focus) {
+  color: #6c757d;
+}
+
+.config-dropdown optgroup {
+  font-weight: 600;
+  font-style: normal;
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.config-dropdown option {
+  padding: 8px 12px;
+  color: #333;
+  background-color: white;
+}
+
+/* Number Input Groups */
+.number-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.config-number-input {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: border-color 0.2s ease;
+}
+
+.config-number-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.config-number-input:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input-suffix {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+  min-width: fit-content;
+}
+
+.hours-helper,
+.level-helper {
+  margin-top: 4px;
+}
+
+.level-helper .helper-text {
+  color: #f59e0b;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.helper-text {
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Enhanced Info Sections */
+.role-info,
+.level-info,
+.location-info {
+  margin-top: 8px;
+}
+
+.info-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-level {
+  background-color: #e7f3ff;
+  color: #0066cc;
+}
+
+.role-category {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.role-rate {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.location-country {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.location-selected {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+/* Description text */
+.role-description,
+.level-description {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #6c757d;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+
+
+/* Enhanced Configuration Summary */
+.config-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  border-left: 4px solid #007bff;
+}
+
+.config-summary h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 13px;
+}
+
+.summary-value {
+  color: #333;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: right;
+}
+
+/* Highlight effective rate */
+.summary-item:nth-child(5) .summary-value {
+  color: #007bff;
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+
+  
+  .number-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .input-suffix {
+    text-align: center;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .enhanced-resource-config-selector {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .info-badges {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .badge {
+    text-align: center;
+  }
+  
+  .config-grid {
+    gap: 8px;
+  }
+  
+  .summary-grid {
+    gap: 4px;
+  }
+}
+
+/* Animation for smooth transitions */
+.role-info,
+.level-info,
+.location-info {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced visual feedback for interdependent fields */
+.config-section:has(.config-dropdown:disabled) {
+  opacity: 0.7;
+}
+
+.config-dropdown:disabled + .info-badges {
+  opacity: 0.5;
+} 
