@@ -30,6 +30,19 @@ class GitRepoAnalyzer:
         self.cron_jobs = []
         self.stored_procedures = []
         
+        # Enhanced cron job tracking
+        self.unique_cron_commands = set()
+        self.unique_schedules = set()
+        self.unique_job_combinations = set()
+        self.cron_command_frequency = defaultdict(int)
+        self.schedule_frequency = defaultdict(int)
+        
+        # Shell script scheduling tracking
+        self.scheduled_shell_scripts = set()
+        self.shell_script_schedules = defaultdict(list)
+        self.shell_script_frequency = defaultdict(int)
+        self.shell_script_cron_jobs = []
+        
         # File extensions to look for
         self.java_extensions = {'.java'}
         self.shell_extensions = {'.sh', '.bash', '.zsh', '.ksh', '.csh'}
@@ -173,12 +186,54 @@ class GitRepoAnalyzer:
                 
                 if match:
                     minute, hour, day, month, dayofweek, command = match.groups()
-                    jobs.append({
+                    schedule = f"{minute} {hour} {day} {month} {dayofweek}"
+                    command_clean = command.strip()
+                    
+                    # Normalize command for uniqueness analysis
+                    normalized_command = self._normalize_command(command_clean)
+                    
+                    # Track unique elements
+                    self.unique_cron_commands.add(normalized_command)
+                    self.unique_schedules.add(schedule)
+                    job_combination = f"{schedule}||{normalized_command}"
+                    self.unique_job_combinations.add(job_combination)
+                    
+                    # Track frequency
+                    self.cron_command_frequency[normalized_command] += 1
+                    self.schedule_frequency[schedule] += 1
+                    
+                    # Check if this is a shell script and track it
+                    shell_script_info = self._extract_shell_script_info(command_clean)
+                    
+                    job_data = {
                         'line': line_num,
-                        'schedule': f"{minute} {hour} {day} {month} {dayofweek}",
-                        'command': command.strip(),
-                        'timing_description': self._describe_cron_timing(minute, hour, day, month, dayofweek)
-                    })
+                        'schedule': schedule,
+                        'command': command_clean,
+                        'normalized_command': normalized_command,
+                        'timing_description': self._describe_cron_timing(minute, hour, day, month, dayofweek),
+                        'is_shell_script': shell_script_info['is_shell_script'],
+                        'shell_script_path': shell_script_info['script_path'],
+                        'shell_script_name': shell_script_info['script_name']
+                    }
+                    
+                    if shell_script_info['is_shell_script']:
+                        script_path = shell_script_info['script_path']
+                        script_name = shell_script_info['script_name']
+                        
+                        self.scheduled_shell_scripts.add(script_path)
+                        self.shell_script_schedules[script_path].append(schedule)
+                        self.shell_script_frequency[script_path] += 1
+                        self.shell_script_cron_jobs.append({
+                            'script_path': script_path,
+                            'script_name': script_name,
+                            'schedule': schedule,
+                            'timing_description': self._describe_cron_timing(minute, hour, day, month, dayofweek),
+                            'cron_file': str(file_path),
+                            'line': line_num,
+                            'full_command': command_clean
+                        })
+                    
+                    jobs.append(job_data)
             
             if jobs:
                 self.cron_jobs.append({
@@ -190,6 +245,161 @@ class GitRepoAnalyzer:
                 
         except Exception as e:
             print(f"Error analyzing cron file {file_path}: {e}")
+    
+    def _normalize_command(self, command: str) -> str:
+        """Normalize command for uniqueness analysis"""
+        # Remove leading/trailing whitespace
+        normalized = command.strip()
+        
+        # Remove multiple spaces and replace with single space
+        normalized = re.sub(r'\s+', ' ', normalized)
+        
+        # Extract the base command (first word) and script name if it's a script
+        parts = normalized.split()
+        if parts:
+            first_part = parts[0]
+            
+            # If it's a common interpreter, get the script name
+            if first_part.lower() in ['python', 'python3', 'bash', 'sh', '/bin/bash', '/bin/sh', 'perl', 'php']:
+                if len(parts) > 1:
+                    script_path = parts[1]
+                    # Get just the script name without path
+                    script_name = Path(script_path).name
+                    # Return interpreter + script name
+                    return f"{first_part} {script_name}"
+            
+            # If it's a direct script execution, get just the script name
+            elif first_part.startswith('/') or first_part.startswith('./'):
+                script_name = Path(first_part).name
+                return script_name
+            
+            # For other commands, keep the base command
+            else:
+                return first_part
+        
+        return normalized
+    
+    def _extract_shell_script_info(self, command: str) -> Dict:
+        """Extract shell script information from a cron command"""
+        info = {
+            'is_shell_script': False,
+            'script_path': None,
+            'script_name': None
+        }
+        
+        # Clean up the command
+        command_clean = command.strip()
+        parts = command_clean.split()
+        
+        if not parts:
+            return info
+        
+        # Check for direct shell script execution
+        first_part = parts[0]
+        
+        # Case 1: Direct execution of script file
+        if self._is_script_file(first_part):
+            info['is_shell_script'] = True
+            info['script_path'] = first_part
+            info['script_name'] = Path(first_part).name
+            return info
+        
+        # Case 2: Interpreter followed by script
+        if first_part.lower() in ['bash', 'sh', '/bin/bash', '/bin/sh', '/usr/bin/bash', '/usr/bin/sh']:
+            if len(parts) > 1:
+                script_path = parts[1]
+                # Skip flags like -c, -x, etc.
+                for i, part in enumerate(parts[1:], 1):
+                    if not part.startswith('-'):
+                        script_path = part
+                        break
+                
+                if self._is_script_file(script_path):
+                    info['is_shell_script'] = True
+                    info['script_path'] = script_path
+                    info['script_name'] = Path(script_path).name
+                    return info
+        
+        # Case 3: Full path to shell interpreter
+        if '/sh' in first_part or '/bash' in first_part:
+            if len(parts) > 1:
+                script_path = parts[1]
+                if self._is_script_file(script_path):
+                    info['is_shell_script'] = True
+                    info['script_path'] = script_path
+                    info['script_name'] = Path(script_path).name
+                    return info
+        
+        # Case 4: Commands that are typically shell scripts (checking for .sh extension in any part)
+        for part in parts:
+            if self._is_script_file(part):
+                info['is_shell_script'] = True
+                info['script_path'] = part
+                info['script_name'] = Path(part).name
+                return info
+        
+        return info
+    
+    def _is_script_file(self, file_path: str) -> bool:
+        """Check if a file path appears to be a shell script"""
+        if not file_path:
+            return False
+        
+        # Check for shell script extensions
+        script_extensions = {'.sh', '.bash', '.zsh', '.ksh', '.csh'}
+        file_ext = Path(file_path).suffix.lower()
+        
+        if file_ext in script_extensions:
+            return True
+        
+        # Check for common script naming patterns
+        file_name = Path(file_path).name.lower()
+        script_patterns = ['script', 'backup', 'maintenance', 'cleanup', 'monitor', 'deploy']
+        
+        # If it has no extension but contains script-like words and is executable path
+        if not file_ext and any(pattern in file_name for pattern in script_patterns):
+            return True
+        
+        # If it's in typical script directories
+        script_dirs = ['/usr/local/bin/', '/opt/', '/home/', '/root/', './']
+        if any(file_path.startswith(dir_path) for dir_path in script_dirs) and not file_ext:
+            # Could be a script without extension
+            return True
+        
+        return False
+    
+    def _get_top_commands(self, limit: int = 5) -> List[Dict]:
+        """Get the most frequently used commands"""
+        sorted_commands = sorted(self.cron_command_frequency.items(), 
+                               key=lambda x: x[1], reverse=True)
+        return [{'command': cmd, 'frequency': freq} for cmd, freq in sorted_commands[:limit]]
+    
+    def _get_top_schedules(self, limit: int = 5) -> List[Dict]:
+        """Get the most frequently used schedules"""
+        sorted_schedules = sorted(self.schedule_frequency.items(), 
+                                key=lambda x: x[1], reverse=True)
+        return [{'schedule': sched, 'frequency': freq, 'description': self._describe_cron_timing(*sched.split())} 
+                for sched, freq in sorted_schedules[:limit]]
+    
+    def _get_top_scheduled_scripts(self, limit: int = 5) -> List[Dict]:
+        """Get the most frequently scheduled shell scripts"""
+        sorted_scripts = sorted(self.shell_script_frequency.items(), 
+                              key=lambda x: x[1], reverse=True)
+        
+        result = []
+        for script_path, freq in sorted_scripts[:limit]:
+            schedules = self.shell_script_schedules[script_path]
+            unique_schedules = list(set(schedules))
+            
+            result.append({
+                'script_path': script_path,
+                'script_name': Path(script_path).name,
+                'frequency': freq,
+                'unique_schedules': len(unique_schedules),
+                'schedules': unique_schedules
+            })
+        
+        return result
     
     def _describe_cron_timing(self, minute: str, hour: str, day: str, month: str, dayofweek: str) -> str:
         """Convert cron timing to human-readable description"""
@@ -241,8 +451,23 @@ class GitRepoAnalyzer:
             },
             'cron_analysis': {
                 'total_cron_jobs': total_cron_jobs,
+                'unique_cron_commands': len(self.unique_cron_commands),
+                'unique_schedules': len(self.unique_schedules),
+                'unique_job_combinations': len(self.unique_job_combinations),
                 'cron_files_found': len(self.cron_jobs),
-                'cron_details': self.cron_jobs
+                'most_frequent_commands': self._get_top_commands(5),
+                'most_frequent_schedules': self._get_top_schedules(5),
+                'cron_details': self.cron_jobs,
+                'command_frequency': dict(self.cron_command_frequency),
+                'schedule_frequency': dict(self.schedule_frequency),
+                'shell_script_analysis': {
+                    'unique_scheduled_shell_scripts': len(self.scheduled_shell_scripts),
+                    'total_shell_script_jobs': len(self.shell_script_cron_jobs),
+                    'scheduled_scripts': list(self.scheduled_shell_scripts),
+                    'most_frequent_scripts': self._get_top_scheduled_scripts(5),
+                    'shell_script_jobs': self.shell_script_cron_jobs,
+                    'script_frequency': dict(self.shell_script_frequency)
+                }
             },
             'sql_analysis': {
                 'total_stored_procedures': total_stored_procedures,
@@ -295,16 +520,53 @@ class GitRepoAnalyzer:
         print("⏰ CRON JOBS ANALYSIS")
         print("-" * 40)
         print(f"Total Cron Jobs: {cron['total_cron_jobs']}")
+        print(f"Unique Commands: {cron['unique_cron_commands']}")
+        print(f"Unique Schedules: {cron['unique_schedules']}")
+        print(f"Unique Job Combinations: {cron['unique_job_combinations']}")
         print(f"Cron Files Found: {cron['cron_files_found']}")
+        
+        # Show most frequent commands
+        if cron['most_frequent_commands']:
+            print("\nMost Frequent Commands:")
+            for cmd_info in cron['most_frequent_commands']:
+                print(f"  • {cmd_info['command']} (used {cmd_info['frequency']} times)")
+        
+        # Show most frequent schedules
+        if cron['most_frequent_schedules']:
+            print("\nMost Frequent Schedules:")
+            for sched_info in cron['most_frequent_schedules']:
+                print(f"  • {sched_info['schedule']} (used {sched_info['frequency']} times)")
+                print(f"    {sched_info['description']}")
+        
+        # Show shell script scheduling analysis
+        shell_analysis = cron.get('shell_script_analysis', {})
+        if shell_analysis.get('unique_scheduled_shell_scripts', 0) > 0:
+            print(f"\n🐚 SCHEDULED SHELL SCRIPTS ANALYSIS")
+            print("-" * 40)
+            print(f"Unique Shell Scripts Scheduled: {shell_analysis['unique_scheduled_shell_scripts']}")
+            print(f"Total Shell Script Jobs: {shell_analysis['total_shell_script_jobs']}")
+            
+            if shell_analysis.get('most_frequent_scripts'):
+                print("\nMost Frequently Scheduled Scripts:")
+                for script_info in shell_analysis['most_frequent_scripts']:
+                    print(f"  • {script_info['script_name']} (scheduled {script_info['frequency']} times)")
+                    print(f"    Path: {script_info['script_path']}")
+                    print(f"    Unique schedules: {script_info['unique_schedules']}")
+                    for schedule in script_info['schedules']:
+                        print(f"      - {schedule}")
         
         if cron['cron_details']:
             print("\nCron Jobs Details:")
             for cron_file in cron['cron_details']:
                 print(f"\n  File: {cron_file['relative_path']}")
                 for job in cron_file['jobs']:
-                    print(f"    • Schedule: {job['schedule']}")
+                    shell_indicator = " 🐚" if job.get('is_shell_script', False) else ""
+                    print(f"    • Schedule: {job['schedule']}{shell_indicator}")
                     print(f"      Timing: {job['timing_description']}")
                     print(f"      Command: {job['command'][:60]}{'...' if len(job['command']) > 60 else ''}")
+                    if job.get('is_shell_script', False):
+                        print(f"      Shell Script: {job.get('shell_script_name', 'N/A')}")
+                    print(f"      Normalized: {job['normalized_command']}")
         print()
         
         # SQL Analysis
@@ -340,6 +602,12 @@ class GitRepoAnalyzer:
         
         # Export summary
         self._export_summary_csv(report, output_path, timestamp)
+        
+        # Export unique cron analysis
+        self._export_unique_cron_analysis_csv(report, output_path, timestamp)
+        
+        # Export scheduled shell scripts
+        self._export_scheduled_shell_scripts_csv(report, output_path, timestamp)
         
         print(f"\nCSV files exported to: {output_path.absolute()}")
         return output_path
@@ -378,7 +646,7 @@ class GitRepoAnalyzer:
         filepath = output_path / filename
         
         with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['cron_file', 'relative_path', 'line_number', 'schedule', 'minute', 'hour', 'day', 'month', 'dayofweek', 'command', 'timing_description']
+            fieldnames = ['cron_file', 'relative_path', 'line_number', 'schedule', 'minute', 'hour', 'day', 'month', 'dayofweek', 'command', 'normalized_command', 'timing_description', 'command_frequency', 'schedule_frequency', 'is_shell_script', 'shell_script_path', 'shell_script_name']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             
@@ -392,6 +660,10 @@ class GitRepoAnalyzer:
                     else:
                         minute = hour = day = month = dayofweek = 'N/A'
                     
+                    # Get frequency information
+                    cmd_freq = cron_analysis['command_frequency'].get(job['normalized_command'], 1)
+                    sched_freq = cron_analysis['schedule_frequency'].get(job['schedule'], 1)
+                    
                     writer.writerow({
                         'cron_file': Path(cron_file['file']).name,
                         'relative_path': cron_file['relative_path'],
@@ -403,7 +675,13 @@ class GitRepoAnalyzer:
                         'month': month,
                         'dayofweek': dayofweek,
                         'command': job['command'],
-                        'timing_description': job['timing_description']
+                        'normalized_command': job['normalized_command'],
+                        'timing_description': job['timing_description'],
+                        'command_frequency': cmd_freq,
+                        'schedule_frequency': sched_freq,
+                        'is_shell_script': job.get('is_shell_script', False),
+                        'shell_script_path': job.get('shell_script_path', ''),
+                        'shell_script_name': job.get('shell_script_name', '')
                     })
         
         print(f"Cron jobs exported to: {filename}")
@@ -482,6 +760,39 @@ class GitRepoAnalyzer:
                 'details': f"Found in {cron_analysis['cron_files_found']} cron files"
             })
             
+            writer.writerow({
+                'metric': 'Unique Cron Commands',
+                'count': cron_analysis['unique_cron_commands'],
+                'details': f"Distinct commands scheduled across all cron jobs"
+            })
+            
+            writer.writerow({
+                'metric': 'Unique Cron Schedules',
+                'count': cron_analysis['unique_schedules'],
+                'details': f"Distinct scheduling patterns used"
+            })
+            
+            writer.writerow({
+                'metric': 'Unique Job Combinations',
+                'count': cron_analysis['unique_job_combinations'],
+                'details': f"Unique schedule+command combinations"
+            })
+            
+            # Shell script scheduling metrics
+            shell_script_analysis = cron_analysis.get('shell_script_analysis', {})
+            if shell_script_analysis:
+                writer.writerow({
+                    'metric': 'Unique Scheduled Shell Scripts',
+                    'count': shell_script_analysis.get('unique_scheduled_shell_scripts', 0),
+                    'details': f"Distinct shell scripts scheduled in cron jobs"
+                })
+                
+                writer.writerow({
+                    'metric': 'Total Shell Script Cron Jobs',
+                    'count': shell_script_analysis.get('total_shell_script_jobs', 0),
+                    'details': f"Total number of cron jobs executing shell scripts"
+                })
+            
             # SQL metrics
             sql_analysis = report['sql_analysis']
             writer.writerow({
@@ -504,6 +815,115 @@ class GitRepoAnalyzer:
             })
         
         print(f"Summary statistics exported to: {filename}")
+    
+    def _export_unique_cron_analysis_csv(self, report: Dict, output_path: Path, timestamp: str):
+        """Export unique cron job analysis to CSV"""
+        cron_analysis = report['cron_analysis']
+        
+        # Export unique commands
+        filename = f"unique_cron_commands_{timestamp}.csv"
+        filepath = output_path / filename
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['command', 'frequency', 'schedules_used']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            # Get all schedules for each command
+            command_schedules = defaultdict(set)
+            for cron_file in cron_analysis['cron_details']:
+                for job in cron_file['jobs']:
+                    command_schedules[job['normalized_command']].add(job['schedule'])
+            
+            for cmd_info in cron_analysis['most_frequent_commands']:
+                schedules = list(command_schedules[cmd_info['command']])
+                writer.writerow({
+                    'command': cmd_info['command'],
+                    'frequency': cmd_info['frequency'],
+                    'schedules_used': '; '.join(schedules)
+                })
+        
+        print(f"Unique commands analysis exported to: {filename}")
+        
+        # Export unique schedules
+        filename = f"unique_cron_schedules_{timestamp}.csv"
+        filepath = output_path / filename
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['schedule', 'frequency', 'description', 'commands_using']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            # Get all commands for each schedule
+            schedule_commands = defaultdict(set)
+            for cron_file in cron_analysis['cron_details']:
+                for job in cron_file['jobs']:
+                    schedule_commands[job['schedule']].add(job['normalized_command'])
+            
+            for sched_info in cron_analysis['most_frequent_schedules']:
+                commands = list(schedule_commands[sched_info['schedule']])
+                writer.writerow({
+                    'schedule': sched_info['schedule'],
+                    'frequency': sched_info['frequency'],
+                    'description': sched_info['description'],
+                    'commands_using': '; '.join(commands)
+                })
+        
+        print(f"Unique schedules analysis exported to: {filename}")
+    
+    def _export_scheduled_shell_scripts_csv(self, report: Dict, output_path: Path, timestamp: str):
+        """Export scheduled shell scripts analysis to CSV"""
+        cron_analysis = report['cron_analysis']
+        shell_script_analysis = cron_analysis.get('shell_script_analysis', {})
+        
+        if not shell_script_analysis.get('shell_script_jobs'):
+            print("No scheduled shell scripts found to export.")
+            return
+        
+        # Export detailed shell script jobs
+        filename = f"scheduled_shell_scripts_{timestamp}.csv"
+        filepath = output_path / filename
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['script_name', 'script_path', 'schedule', 'timing_description', 'cron_file', 'line_number', 'full_command', 'frequency']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            script_frequency = shell_script_analysis.get('script_frequency', {})
+            
+            for job in shell_script_analysis['shell_script_jobs']:
+                writer.writerow({
+                    'script_name': job['script_name'],
+                    'script_path': job['script_path'],
+                    'schedule': job['schedule'],
+                    'timing_description': job['timing_description'],
+                    'cron_file': Path(job['cron_file']).name,
+                    'line_number': job['line'],
+                    'full_command': job['full_command'],
+                    'frequency': script_frequency.get(job['script_path'], 1)
+                })
+        
+        print(f"Scheduled shell scripts exported to: {filename}")
+        
+        # Export shell script summary
+        filename = f"shell_script_summary_{timestamp}.csv"
+        filepath = output_path / filename
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['script_name', 'script_path', 'total_schedules', 'unique_schedules', 'schedules_list']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for script_info in shell_script_analysis.get('most_frequent_scripts', []):
+                writer.writerow({
+                    'script_name': script_info['script_name'],
+                    'script_path': script_info['script_path'],
+                    'total_schedules': script_info['frequency'],
+                    'unique_schedules': script_info['unique_schedules'],
+                    'schedules_list': '; '.join(script_info['schedules'])
+                })
+        
+        print(f"Shell script summary exported to: {filename}")
 
 
 def main():
