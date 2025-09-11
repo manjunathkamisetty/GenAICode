@@ -70,6 +70,16 @@ chat_history.append(response_1)
 
 print(type(response_1))
 #print(response_1)
+tool_calls_1 = response_1.tool_calls
+
+tool_1_name = tool_calls_1[0]["name"]
+tool_1_args = tool_calls_1[0]["args"]
+tool_call_1_id = tool_calls_1[0]["id"]
+
+print(f'tool name:\n{tool_1_name}')
+print(f'tool args:\n{tool_1_args}')
+print(f'tool call ID:\n{tool_call_1_id}')
+
 tool_response = tool_map[tool_1_name].invoke(tool_1_args)
 tool_message = ToolMessage(content=tool_response, tool_call_id=tool_call_1_id)
 
@@ -80,15 +90,6 @@ answer = llm_with_tools.invoke(chat_history)
 print(type(answer))
 print(answer.content)
 
-tool_calls_1 = response_1.tool_calls
-
-tool_1_name = tool_calls_1[0]["name"]
-tool_1_args = tool_calls_1[0]["args"]
-tool_call_1_id = tool_calls_1[0]["id"]
-
-print(f'tool name:\n{tool_1_name}')
-print(f'tool args:\n{tool_1_args}')
-print(f'tool call ID:\n{tool_call_1_id}')
 
 #building an agent y_agent = ToolCallingAgent(llm)
 
@@ -132,5 +133,6 @@ my_agent = ToolCallingAgent(llm)
 print(my_agent.run("one plus 2"))
 
 print(my_agent.run("one - 2"))
+
 
 print(my_agent.run("three times two"))
